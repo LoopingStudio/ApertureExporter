@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* --- VARIABLES & RESET --- */
+    :root {
+      --primary: #7B61FF;
+      --primary-hover: #6344E8;
+      --bg-app: #F5F6F8;
+      --bg-card: #FFFFFF;
+      --text-main: #333333;
+      --text-sub: #888888;
+      --border: #E0E0E0;
+      --danger: #FF4D4D;
+      --danger-bg: #FFE5E5;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* --- HEADER --- */
+    .header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E0E0E0;
+    }
+    .logo-svg { width: 32px; height: 32px; fill: var(--primary); }
+    h1 { font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+
+    /* --- CARDS --- */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-sub); font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* --- FORMS --- */
+    label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+
+    /* Style par défaut pour les Selects */
+    select {
+      width: 100%; padding: 10px 12px; font-size: 13px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background-color: #FAFAFA; color: var(--text-main); outline: none;
+      box-sizing: border-box; margin-bottom: 12px; appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 8px auto;
+    }
+    select:focus { border-color: var(--primary); background-color: #fff; }
+
+    /* Style spécifique pour l'input Nom de Marque (pas de flèche) */
+    .input-text {
+      width: 100%; padding: 10px 12px; font-size: 14px; font-weight: 600;
+      border: 1px solid var(--border); border-radius: 6px;
+      background-color: #fff; color: var(--text-main); outline: none;
+      box-sizing: border-box; transition: all 0.2s;
+    }
+    .input-text:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1); }
+
+    /* --- BRAND ROWS --- */
+    .brand-row {
+      background: #F8F9FA; border: 1px solid var(--border); border-radius: 8px;
+      padding: 16px; margin-bottom: 12px;
+    }
+    .brand-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px;
+    }
+
+    /* Bouton Supprimer */
+    .btn-delete {
+      background: transparent; color: var(--danger);
+      border: 1px solid transparent; border-radius: 4px;
+      padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-delete:hover { background: var(--danger-bg); border-color: rgba(255, 77, 77, 0.2); }
+
+    /* Grid Layout */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .col-header {
+      font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* --- SOURCE INPUT GROUP (La correction magique) --- */
+    .source-group {
+        position: relative;
+        margin-top: 20px; /* Espace pour le label flottant */
+    }
+
+    .source-label {
+        position: absolute;
+        top: -8px; left: 12px;
+        background: #F8F9FA; /* Même couleur que le fond de la row pour masquer la bordure */
+        padding: 0 4px;
+        font-size: 10px; font-weight: 600; color: var(--primary);
+        z-index: 2;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex; align-items: stretch;
+    }
+
+    .color-bar {
+        width: 3px;
+        background: var(--primary);
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+        position: absolute; left: 0; top: 0; bottom: 0; z-index: 1;
+    }
+
+    /* Ajustement du select quand il a la barre colorée */
+    .select-with-bar {
+        margin-bottom: 0; /* On gère la margin sur le groupe */
+        border-left: none; /* La barre remplace la bordure gauche */
+        padding-left: 12px; /* Un peu plus d'espace */
+    }
+
+    /* --- BUTTONS FOOTER --- */
+    .btn { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: white; width: 100%; padding: 14px; font-size: 14px; box-shadow: 0 4px 6px rgba(123, 97, 255, 0.2); }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-text { background: transparent; color: var(--primary); padding: 4px 8px; font-size: 13px; }
+    .btn-text:hover { background: rgba(123, 97, 255, 0.1); }
+    .hidden { display: none !important; }
+    .loader { text-align: center; color: var(--text-sub); padding: 40px; font-size: 13px; }
+    /* --- CSS ALIGNEMENT FLÈCHE --- */
+    
+    .mapping-row {
+        display: flex;
+        align-items: flex-end; /* Aligne tout sur le bas (la base des inputs) */
+        gap: 12px;
+    }
+
+    .arrow-separator {
+        /* MAGIE ICI : On donne à la flèche la hauteur exacte de l'input */
+        height: 38px; 
+        
+        /* On utilise flex pour centrer le glyphe "→" dans cette boîte de 38px */
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        
+        /* Style */
+        color: #CCC;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    /* Force les selects du mapping à ne pas avoir de marge en bas pour coller à la ligne */
+    .mapping-row select, 
+    .mapping-row .compact-select {
+        margin-bottom: 0 !important;
+    }
+    .input-group {
+        flex: 1;
+        min-width: 0;
+    }
+    .tiny-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-sub);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+    }
+    /* Optionnel : pour que les selects du haut soient aussi compacts */
+    .compact-select {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        height: 36px; /* Hauteur fixe pour alignement parfait */
+    }
+</style>
+</head>
+<body>
+
+  <div id="loading" class="loader">
+    <svg class="logo-svg" style="animation: spin 2s linear infinite; width:24px; height:24px; margin-bottom:10px;" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+    </svg>
+    <br>Chargement des collections...
+  </div>
+
+  <div id="main" class="hidden">
+    
+    <div class="header">
+        <svg class="logo-svg" viewBox="0 0 600 640" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="paint0_linear_2701_2" x1="197.129" y1="320" x2="197.129" y2="559.977" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#F28F95"/>
+                    <stop offset="1" stop-color="#DB3753"/>
+                </linearGradient>
+                <linearGradient id="paint1_linear_2701_2" x1="298.565" y1="0" x2="298.565" y2="640" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#DB3753"/>
+                    <stop offset="1" stop-color="#FEDADB"/>
+                </linearGradient>
+            </defs>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M335.682 101.447C321.112 76.21 300.686 56.488 277.129 42.9164V160.068C304.675 207.921 306.722 268.728 277.149 319.989L415.66 240.023C429.299 216.488 437.129 189.163 437.129 160C437.129 130.86 429.299 103.557 415.682 80.0226L357.106 181.469C357.125 154.266 350.271 126.699 335.682 101.47V101.447ZM357.106 181.492L277.149 319.989C328.397 290.396 357.03 236.717 357.106 181.492ZM218.553 101.447C193.316 86.8766 165.764 80 138.553 80.0227L277.106 320C188.742 320.012 117.129 391.633 117.129 480C117.129 509.14 124.959 536.443 138.576 559.977L197.152 458.531C197.129 485.742 203.983 513.316 218.576 538.553C233.146 563.79 253.572 583.512 277.129 597.084V479.932C249.875 432.585 247.582 372.557 276.182 321.641L277.106 320.039C277.107 320.935 277.114 321.83 277.129 322.722V479.955C290.701 503.535 310.445 523.983 335.682 538.553C360.919 553.123 388.471 560 415.66 559.977L357.084 458.53C310.022 431.29 278.098 380.792 277.129 322.722V320M277.106 320L277.106 160.045C263.535 136.465 243.79 116.017 218.553 101.447M277.106 320.013C225.852 349.61 197.22 403.299 197.152 458.531L276.182 321.641C276.487 321.098 276.795 320.557 277.106 320.017V320.013ZM495.682 261.447C510.252 236.21 517.129 208.658 517.106 181.47L415.66 240.045C388 287.831 336.363 320.008 277.168 320.023L415.66 399.977C360.426 399.909 306.735 371.274 277.139 320.017L357.106 458.53C380.641 472.17 407.966 480 437.129 480C466.292 480 493.572 472.17 517.106 458.553L415.66 399.977C442.871 400 470.445 393.146 495.682 378.553C520.919 363.983 540.641 343.557 554.213 320H437.123C460.687 306.429 481.12 286.692 495.682 261.47V261.447ZM437.044 320.023H277.168C328.414 349.585 389.199 347.546 437.044 320.023Z" fill="url(#paint0_linear_2701_2)"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M335.682 101.447C350.252 126.706 357.129 154.281 357.106 181.469L415.682 80.0227C429.299 103.558 437.129 130.86 437.129 160C437.129 189.141 429.299 216.465 415.66 240.023L517.084 181.46C517.104 208.644 510.227 236.191 495.66 261.424C481.089 286.684 460.641 306.406 437.061 319.977L437.084 320H554.235C540.664 343.557 520.942 363.983 495.705 378.553H495.682C470.423 393.123 442.848 400 415.66 399.977L517.106 458.553C493.572 472.17 466.27 480 437.129 480C407.966 480 380.664 472.17 357.106 458.53L415.669 559.955C388.485 559.975 360.938 553.099 335.705 538.531C310.445 523.96 290.723 503.512 277.152 479.932L277.129 479.955V597.107C324.993 624.681 385.838 626.746 437.129 597.107L415.695 559.977C470.93 559.927 524.643 531.287 554.258 480L517.106 458.553C564.925 430.888 597.129 379.211 597.129 320H554.235C581.81 272.136 583.875 211.291 554.235 160L517.106 181.434C517.056 126.199 488.416 72.4857 437.129 42.8711L415.682 80.0227C388.017 32.2043 336.34 0 277.129 0V42.8936C229.265 15.3191 168.42 13.2538 117.129 42.8936L138.563 80.0227C83.3277 80.0726 29.6147 108.713 0 160L277.09 319.977C277.09 319.977 277.09 319.977 277.09 319.977C200.568 275.822 102.733 302.061 58.5759 378.553C14.3887 455.081 40.6241 552.942 117.129 597.107L138.558 559.986C166.224 607.8 217.898 640 277.106 640V597.106C253.549 583.535 233.123 563.813 218.553 538.576V538.553C203.983 513.294 197.106 485.719 197.129 458.53L138.571 559.946C124.957 536.413 117.129 509.114 117.129 479.977C117.129 391.616 188.733 319.999 277.09 319.977M277.129 320L277.129 319.977C277.125 319.977 277.12 319.977 277.116 319.977L138.589 80.0453C165.773 80.0248 193.32 86.9016 218.576 101.469C243.835 116.04 263.557 136.488 277.129 160.068V160.045L277.129 42.8936C300.686 56.4652 321.112 76.1872 335.682 101.424V101.447" fill="url(#paint1_linear_2701_2)"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M277.129 160.045V320C306.723 268.732 304.681 207.909 277.129 160.045ZM437.084 320L277.129 320C328.397 349.594 389.22 347.552 437.084 320ZM277.129 320L357.106 181.469C357.038 236.703 328.404 290.394 277.146 319.99L415.66 240.023C387.994 287.818 336.34 320 277.129 320ZM277.111 320.031L197.152 458.53C197.22 403.291 225.861 349.594 277.129 320L415.66 399.977C360.426 399.909 306.735 371.274 277.139 320.017L357.106 458.53C309.324 430.873 277.147 379.24 277.129 320.05V479.955C249.583 432.1 247.536 371.293 277.111 320.031Z" fill="white"/>
+        </svg>
+        <h1>Aperture Exporter</h1>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+          <span>Mapping Global</span>
+      </div>
+      
+      <div class="mapping-row">
+          <div class="input-group">
+              <div class="tiny-label">Source (Primitives)</div>
+              <select id="primitiveCollectionSelect" class="compact-select"></select>
+          </div>
+
+          <div class="arrow-separator">→</div>
+
+          <div class="input-group">
+              <div class="tiny-label">Cible (Sémantique)</div>
+              <select id="tokenCollectionSelect" class="compact-select"></select>
+          </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <span>Marques & Mapping</span>
+        <button class="btn btn-text" id="addBrandBtn">+ Ajouter</button>
+      </div>
+      <div id="brandsContainer"></div>
+    </div>
+
+    <button id="exportBtn" class="btn btn-primary">Exporter le JSON</button>
+  </div>
+
+  <script>
+    let collectionsData = [];
+
+    /* --- INITIALISATION --- */
+    window.onload = () => parent.postMessage({ pluginMessage: { type: 'init' } }, '*');
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+
+      if (msg.type === 'init-data') {
+        collectionsData = msg.collections;
+        setupUI();
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('main').classList.remove('hidden');
+      }
+
+      if (msg.type === 'download-json') {
+        const jsonString = JSON.stringify(msg.data, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onload = () => {
+             const link = document.createElement("a");
+             link.href = reader.result;
+             link.download = "aperture_tokens.json";
+             link.click();
+        };
+      }
+    };
+
+    /* --- LOGIC --- */
+    function setupUI() {
+      const tokenSelect = document.getElementById('tokenCollectionSelect');
+      const primSelect = document.getElementById('primitiveCollectionSelect');
+
+      // 1. Remplir les dropdowns
+      collectionsData.forEach(c => {
+        tokenSelect.add(new Option(c.name, c.id));
+        primSelect.add(new Option(c.name, c.id));
+      });
+
+      // 2. Auto-sélection
+      const primFound = collectionsData.find(c => c.name.startsWith("_") || c.name.toLowerCase().includes("primitive"));
+      if(primFound) primSelect.value = primFound.id;
+
+      const modeFound = collectionsData.find(c => c.name.toLowerCase().includes("mode") || c.name.toLowerCase().includes("token"));
+      if(modeFound) tokenSelect.value = modeFound.id;
+
+      // 3. Auto-génération des marques
+      populateBrandsFromPrimitives();
+
+      // Listeners
+      primSelect.addEventListener('change', populateBrandsFromPrimitives);
+      tokenSelect.addEventListener('change', () => {
+         document.querySelectorAll('.brand-row').forEach(row => updateTokenDropdownsSmartly(row));
+      });
+    }
+
+    function populateBrandsFromPrimitives() {
+        const primId = document.getElementById('primitiveCollectionSelect').value;
+        const primColl = collectionsData.find(c => c.id === primId);
+        const container = document.getElementById('brandsContainer');
+        
+        container.innerHTML = ""; 
+
+        if (!primColl) return;
+
+        primColl.modes.forEach(mode => {
+            addBrandRow(mode.name, mode.modeId);
+        });
+    }
+
+    function addBrandRow(name = "", preselectedPrimitiveModeId = null) {
+      const container = document.getElementById('brandsContainer');
+      const div = document.createElement('div');
+      div.className = 'brand-row';
+      
+      div.innerHTML = `
+        <div class="brand-header">
+           <input type="text" class="input-text brand-name-input" value="${name}" placeholder="Nom de la Marque (ex: Legacy)">
+           
+           <button class="btn-delete" onclick="this.closest('.brand-row').remove()">Supprimer</button>
+        </div>
+        
+        <div class="grid-2">
+            <div class="col">
+                <div class="col-header">
+                    <span style="width:8px; height:8px; background:#FFD700; border-radius:50%;"></span>
+                    LIGHT MODE
+                </div>
+                
+                <select class="sel-light-token"></select>
+                
+                <div class="source-group">
+                    <span class="source-label" style="color:var(--text-sub);">Source</span>
+                    <div class="input-wrapper">
+                        <div class="color-bar" style="background:#FFD700;"></div>
+                        <select class="sel-light-prim select-with-bar"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="col-header">
+                    <span style="width:8px; height:8px; background:#4801A0; border-radius:50%;"></span>
+                    DARK MODE
+                </div>
+                
+                <select class="sel-dark-token"></select>
+                
+                <div class="source-group">
+                    <span class="source-label" style="color:var(--text-sub);">Source</span>
+                    <div class="input-wrapper">
+                        <div class="color-bar" style="background:#4801A0;"></div>
+                        <select class="sel-dark-prim select-with-bar"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+      `;
+      container.appendChild(div);
+      updateRowDropdowns(div, preselectedPrimitiveModeId);
+    }
+
+    function updateRowDropdowns(rowDiv, targetPrimitiveModeId) {
+        const tokenId = document.getElementById('tokenCollectionSelect').value;
+        const primId = document.getElementById('primitiveCollectionSelect').value;
+
+        const tokenColl = collectionsData.find(c => c.id === tokenId);
+        const primColl = collectionsData.find(c => c.id === primId);
+
+        // Remplir Primitives
+        const primSelects = [rowDiv.querySelector('.sel-light-prim'), rowDiv.querySelector('.sel-dark-prim')];
+        primSelects.forEach(sel => {
+            sel.innerHTML = "";
+            if (primColl) {
+                primColl.modes.forEach(m => sel.add(new Option(m.name, m.modeId)));
+                if (targetPrimitiveModeId) sel.value = targetPrimitiveModeId;
+            }
+        });
+        
+        // Remplir Tokens (Smart)
+        updateTokenDropdownsSmartly(rowDiv);
+    }
+
+    function updateTokenDropdownsSmartly(rowDiv) {
+        const tokenId = document.getElementById('tokenCollectionSelect').value;
+        const tokenColl = collectionsData.find(c => c.id === tokenId);
+        const brandNameInput = rowDiv.querySelector('.brand-name-input');
+        const brandName = brandNameInput ? brandNameInput.value.toLowerCase() : "";
+
+        const lightSel = rowDiv.querySelector('.sel-light-token');
+        const darkSel = rowDiv.querySelector('.sel-dark-token');
+
+        [lightSel, darkSel].forEach(sel => sel.innerHTML = "");
+        if (!tokenColl) return;
+
+        tokenColl.modes.forEach(m => {
+            lightSel.add(new Option(m.name, m.modeId));
+            darkSel.add(new Option(m.name, m.modeId));
+        });
+
+        // --- SMART SELECT LOGIC ---
+
+        // 1. RECHERCHE LIGHT
+        // Priorité A : Contient le nom de la marque ET ("light" ou pas "dark")
+        let foundLight = tokenColl.modes.find(m => {
+            const n = m.name.toLowerCase();
+            return n.includes(brandName) && (n.includes("light") || !n.includes("dark"));
+        });
+
+        // Priorité B (Fallback) : Si pas trouvé, prend le premier qui contient "light" (ou qui n'est pas "dark")
+        if (!foundLight) {
+            foundLight = tokenColl.modes.find(m => {
+                const n = m.name.toLowerCase();
+                return n.includes("light") || !n.includes("dark");
+            });
+        }
+        
+        if (foundLight) lightSel.value = foundLight.modeId;
+
+
+        // 2. RECHERCHE DARK
+        // Priorité A : Contient le nom de la marque ET "dark"
+        let foundDark = tokenColl.modes.find(m => {
+            const n = m.name.toLowerCase();
+            return n.includes(brandName) && n.includes("dark");
+        });
+
+        // Priorité B (Fallback) : Si pas trouvé, prend le premier qui contient "dark"
+        if (!foundDark) {
+            foundDark = tokenColl.modes.find(m => m.name.toLowerCase().includes("dark"));
+        }
+
+        if (foundDark) darkSel.value = foundDark.modeId;
+    }
+
+    document.getElementById('addBrandBtn').onclick = () => addBrandRow("Nouvelle Marque");
+
+    document.getElementById('exportBtn').onclick = () => {
+        const brands = [];
+        document.querySelectorAll('.brand-row').forEach(row => {
+            brands.push({
+                name: row.querySelector('.brand-name-input').value || "Unnamed",
+                light: {
+                    modeId: row.querySelector('.sel-light-token').value,
+                    primitiveModeId: row.querySelector('.sel-light-prim').value
+                },
+                dark: {
+                    modeId: row.querySelector('.sel-dark-token').value,
+                    primitiveModeId: row.querySelector('.sel-dark-prim').value
+                }
+            });
+        });
+
+        const config = {
+            tokenCollectionId: document.getElementById('tokenCollectionSelect').value,
+            primitiveCollectionId: document.getElementById('primitiveCollectionSelect').value,
+            brands: brands
+        };
+
+        parent.postMessage({ pluginMessage: { type: 'export', config } }, '*');
+    };
+  </script>
+</body>
+</html>

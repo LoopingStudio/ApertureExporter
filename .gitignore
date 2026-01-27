@@ -1,0 +1,19 @@
+# --- Dépendances (NE JAMAIS COMMITER ÇA) ---
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# --- Build Figma (Le résultat de la compilation) ---
+# On ignore le dossier dist car on peut le régénérer avec "npm run build"
+dist/
+# Si jamais tes fichiers compilés traînent ailleurs :
+*.js.map
+
+# --- Système (Fichiers parasites Mac/Windows) ---
+.DS_Store
+Thumbs.db
+
+# --- IDE (Configurations locales de VS Code) ---
+.vscode/
+.idea/
