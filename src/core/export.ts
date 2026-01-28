@@ -1,4 +1,4 @@
-import { sanitizeName, insertTokenIntoTree, toKebabCase, sanitizeFolderName } from './utils';
+import { sanitizeName, insertTokenIntoTree, toKebabCase, sanitizeFolderName, sortTokensAlphabetically, createExportMetadata } from './utils';
 import { resolveBrandColors } from './resolve';
 
 /**
@@ -40,8 +40,17 @@ export async function exportTokens(config: ExportConfig): Promise<void> {
   // Process variables and build token structure
   const rootArray = await processVariables(variables, brands);
   
+  // Sort tokens and categories alphabetically
+  const sortedTokens = sortTokensAlphabetically(rootArray);
+  
+  // Create final export structure with metadata
+  const exportData = {
+    metadata: createExportMetadata(),
+    tokens: sortedTokens
+  };
+  
   // Send the exported data to the UI for download
-  figma.ui.postMessage({ type: "download-json", data: rootArray });
+  figma.ui.postMessage({ type: "download-json", data: exportData });
   figma.notify("✅ Export finished !");
 }
 

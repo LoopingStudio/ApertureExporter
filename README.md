@@ -10,7 +10,9 @@
 * **Multi-Marques** : Gérez plusieurs marques (ex: Legacy, NewBrand) avec leurs propres modes Light et Dark.
 * **Interface Visuelle** : UI moderne pour configurer le mapping "Source → Cible" avant l'export.
 * **JSON Structuré** : Génère un fichier JSON propre, imbriqué (Nested), prêt pour l'intégration (compatible Style Dictionary).
-* **Filtrage** : Ignore automatiquement les variables privées (commençant par `_`, `#`) ou les utilitaires.
+* **Tri Alphabétique** : Les tokens et sous-catégories sont automatiquement triés alphabétiquement dans le JSON final.
+* **Métadonnées d'Export** : Chaque export inclut un timestamp et des informations sur la version pour traçabilité.
+* **Filtrage Intelligent** : Ignore automatiquement les variables privées (commençant par `_`, `#`).
 
 ---
 
@@ -96,45 +98,55 @@ ApertureExporter/
 ---
 
 ## Structure du JSON exporté
-Le fichier généré suit une structure hiérarchique basée sur les noms de vos variables (ex: `Colors/Border/Primary`).
+Le fichier généré inclut des métadonnées d'export et suit une structure hiérarchique basée sur les noms de vos variables (ex: `Colors/Border/Primary`). Les tokens et groupes sont automatiquement triés alphabétiquement.
 
 ```json
-[
-  {
-    "name": "Colors",
-    "type": "group",
-    "children": [
-      {
-        "name": "Border",
-        "type": "group",
-        "children": [
-          {
-            "name": "primary",
-            "type": "token",
-            "modes": {
-              "Legacy": {
-                "light": "#E5E5E5",
-                "dark": "#333333"
-              },
-              "NewBrand": {
-                "light": "#7B61FF",
-                "dark": "#4801A0"
+{
+  "metadata": {
+    "exportedAt": "2026-01-28T14:32:45.123Z",
+    "timestamp": 1737814365123,
+    "version": "1.0.0",
+    "generator": "Aperture Exporter"
+  },
+  "tokens": [
+    {
+      "name": "Colors",
+      "type": "group",
+      "children": [
+        {
+          "name": "Border",
+          "type": "group",
+          "children": [
+            {
+              "name": "primary",
+              "type": "token",
+              "path": "Colors/Border/Primary",
+              "modes": {
+                "Legacy": {
+                  "light": "#E5E5E5",
+                  "dark": "#333333"
+                },
+                "NewBrand": {
+                  "light": "#7B61FF",
+                  "dark": "#4801A0"
+                }
               }
             }
-          }
-        ]
-      }
-    ]
-  }
-]
+          ]
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ## Règles de Nommage
 Pour que le plugin fonctionne de manière optimale :
 - **Primitives** : Doivent contenir les valeurs Hex brutes.
 - **Tokens Sémantiques** : Doivent être des Alias pointant vers les Primitives.
-- **Exclusions** : Les variables commençant par _, # ou contenant Utility sont automatiquement exclues de l'export.
-- **Noms Numériques** : Un token nommé Gray/50 sera transformé en Gray-50 pour éviter les clés purement numériques.
+- **Exclusions** : Les variables commençant par `_` ou `#` sont automatiquement exclues de l'export.
+- **Noms Numériques** : Un token nommé `Gray/50` sera transformé en `gray-50` pour éviter les clés purement numériques.
+- **Organisation** : Les tokens et groupes sont triés alphabétiquement dans l'export final, avec les groupes placés avant les tokens individuels.
 
 ---
 **Développé avec ❤️ pour le Design System Aperture.**

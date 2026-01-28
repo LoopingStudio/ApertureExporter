@@ -87,3 +87,44 @@ export function insertTokenIntoTree(rootArray: any[], folders: string[], tokenOb
   // Add the token to the final group level
   currentLevel.push(tokenObj);
 }
+
+/**
+ * Sorts an array of tokens and groups alphabetically by name.
+ * Groups are sorted first, followed by tokens. Children arrays are recursively sorted.
+ * @param items Array of token/group items to sort
+ * @returns Sorted array
+ */
+export function sortTokensAlphabetically(items: any[]): any[] {
+  return items
+    .map(item => {
+      // If it's a group, recursively sort its children
+      if (item.type === 'group' && item.children) {
+        return {
+          ...item,
+          children: sortTokensAlphabetically(item.children)
+        };
+      }
+      return item;
+    })
+    .sort((a, b) => {
+      // Sort groups before tokens
+      if (a.type === 'group' && b.type !== 'group') return -1;
+      if (a.type !== 'group' && b.type === 'group') return 1;
+      
+      // Then sort alphabetically by name
+      return a.name.localeCompare(b.name);
+    });
+}
+
+/**
+ * Creates export metadata with timestamp and other relevant information.
+ * @returns Export metadata object
+ */
+export function createExportMetadata(): any {
+  return {
+    exportedAt: new Date().toISOString(),
+    timestamp: Date.now(),
+    version: "1.0.0",
+    generator: "Aperture Exporter"
+  };
+}
